@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InteractInterface.h"
 #include "GameFramework/Character.h"
 #include "CharacterController.generated.h"
 
@@ -23,6 +24,20 @@ protected:
 	void MoveSide(float Value);
 	void Turn(float Value);
 	void LookUp(float Value);
+	void StartCrouch();
+	void StopCrouch();
+	void InteractPressed();
+
+	UFUNCTION(BlueprintCallable)
+	void TraceForward();
+	void TraceForwardImplementation();
+
+	UFUNCTION()
+	void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 public:	
 	// Called every frame
@@ -40,5 +55,16 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	float BaseLookRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactive, meta = (AllowPrivateAccess = "true"))
+	float TraceDistance;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactive, meta = (AllowPrivateAccess = "true"))
+    class UBoxComponent* InteractBox;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactive, meta = (AllowPrivateAccess = "true"))
+	class USphereComponent* Hand;
+	
+	IInteractInterface* Interaction = nullptr;
 	
 };
