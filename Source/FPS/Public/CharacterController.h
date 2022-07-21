@@ -26,11 +26,9 @@ protected:
 	void LookUp(float Value);
 	void StartCrouch();
 	void StopCrouch();
-	void InteractPressed();
 
-	UFUNCTION(BlueprintCallable)
-	void TraceForward();
-	void TraceForwardImplementation();
+	bool TraceUnderCrosshair(FHitResult& OutHitResult, FVector& OutHitLocation);
+	void TraceForItems();
 
 	UFUNCTION()
 	void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -56,14 +54,21 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	float BaseLookRate;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactive, meta = (AllowPrivateAccess = "true"))
-	float TraceDistance;
-	
+	// Interaction
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactive, meta = (AllowPrivateAccess = "true"))
     class UBoxComponent* InteractBox;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactive, meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* Hand;
+
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class AItem* TraceHitItemLastFrame = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	AItem* TraceHitItem = nullptr;
+	
+	bool bShouldTraceForItems;
 	
 	IInteractInterface* Interaction = nullptr;
 	

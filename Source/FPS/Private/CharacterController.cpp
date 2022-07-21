@@ -9,12 +9,12 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ACharacterController::ACharacterController() :
 	BaseTurnRate(45.f),
-	BaseLookRate(45.f),
-	TraceDistance(2000.f)
+	BaseLookRate(45.f)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -44,6 +44,8 @@ void ACharacterController::BeginPlay()
 void ACharacterController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	TraceForItems();
 
 }
 
@@ -97,32 +99,6 @@ void ACharacterController::LookUp(float Value)
 	
 }
 
-void ACharacterController::InteractPressed()
-{
-	
-	
-}
-
-void ACharacterController::TraceForwardImplementation()
-{
-	FVector Location;
-	FRotator Rotation;
-	FHitResult HitResult;
-
-	GetController()->GetPlayerViewPoint(Location, Rotation);
-
-	FVector Start = Location;
-	FVector End = Start + (Rotation.Vector() * TraceDistance);
-
-	FCollisionQueryParams TraceParams;
-	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End,
-		ECC_Visibility, TraceParams);
-
-	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false,2.f);
-	
-	
-}
-
 void ACharacterController::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(OtherActor)
@@ -155,6 +131,71 @@ void ACharacterController::StopCrouch()
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	ACharacter::UnCrouch();
 	
+}
+
+// Interaction with Item
+bool ACharacterController::TraceUnderCrosshair(FHitResult& OutHitResult, FVector& OutHitLocation)
+{
+	FVector2D VieportSize;
+	if(GEngine && GEngine->GameViewport)
+	{
+		GEngine->GameViewport->GetViewportSize(VieportSize);
+	}
+
+	FVector2D CrosshairLocation(
+		VieportSize.X / 2.f, VieportSize.Y / 2.f);
+	FVector CrosshairWorldPosition;
+	FVector CrosshairWorldDirection;
+
+	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
+		UGameplayStatics::GetPlayerController(this, 0),
+		CrosshairLocation,
+		CrosshairWorldPosition,
+		CrosshairWorldDirection);
+
+	if(bScreenToWorld)
+	{
+		const FVector Start = CrosshairWorldPosition;
+		const FVector End = Start + CrosshairWorldDirection * 5000.f;
+		OutHitLocation = End;
+
+		GetWorld()->LineTraceSingleByChannel(
+			OutHitResult,
+			Start,
+			End,
+			ECollisionChannel::ECC_Visibility);
+		if(OutHitResult.bBlockingHit)
+		{
+			OutHitLocation = OutHitResult.Location;
+			return true;
+		}
+	}
+	return false;
+}
+
+void ACharacterController::TraceForItems()
+{
+	FHitResult ItemTraceResult;
+	FVector HitLocation;
+	TraceUnderCrosshair(ItemTraceResult, HitLocation);
+
+	if (ItemTraceResult.bBlockingHit)
+	{
+		TraceHitItem = Cast<AItem>(ItemTraceResult.GetActor());
+		if(TraceHitItem)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("ITEM_IN"));
+		}
+		if(TraceHitItemLastFrame)
+		{
+			if(TraceHitItem != TraceHitItemLastFrame)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("ITEM_OUT"));
+			}
+		}
+
+		TraceHitItemLastFrame = TraceHitItem;
+	}
 }
 
 
