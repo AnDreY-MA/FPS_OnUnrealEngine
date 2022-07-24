@@ -14,7 +14,8 @@
 // Sets default values
 ACharacterController::ACharacterController() :
 	BaseTurnRate(45.f),
-	BaseLookRate(45.f)
+	BaseLookRate(45.f),
+	bShouldTraceForItems(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -37,7 +38,7 @@ void ACharacterController::BeginPlay()
 	Super::BeginPlay();
 
     InteractBox->OnComponentBeginOverlap.AddDynamic(this, &ACharacterController::OnSphereBeginOverlap);
-
+	InteractBox->OnComponentEndOverlap.AddDynamic(this, &ACharacterController::OnSphereEndOverlap);
 }
 
 // Called every frame
@@ -107,14 +108,23 @@ void ACharacterController::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedC
 		if(Interaction)
 		{
 			Interaction->Interact();
+			bShouldTraceForItems = true;
 		}
 	}
 	
 }
 
-void ACharacterController::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ACharacterController::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	
+	if(OtherActor)
+	{
+		Interaction = Cast<IInteractInterface>(OtherActor);
+		if(Interaction)
+		{
+			Interaction->Interact();
+			bShouldTraceForItems = false;
+		}
+	}
 }
 
 void ACharacterController::StartCrouch()
@@ -175,26 +185,29 @@ bool ACharacterController::TraceUnderCrosshair(FHitResult& OutHitResult, FVector
 
 void ACharacterController::TraceForItems()
 {
-	FHitResult ItemTraceResult;
-	FVector HitLocation;
-	TraceUnderCrosshair(ItemTraceResult, HitLocation);
-
-	if (ItemTraceResult.bBlockingHit)
+	if(bShouldTraceForItems)
 	{
-		TraceHitItem = Cast<AItem>(ItemTraceResult.GetActor());
-		if(TraceHitItem)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("ITEM_IN"));
-		}
-		if(TraceHitItemLastFrame)
-		{
-			if(TraceHitItem != TraceHitItemLastFrame)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("ITEM_OUT"));
-			}
-		}
+		FHitResult ItemTraceResult;
+		FVector HitLocation;
+		TraceUnderCrosshair(ItemTraceResult, HitLocation);
 
-		TraceHitItemLastFrame = TraceHitItem;
+		if (ItemTraceResult.bBlockingHit)
+		{
+			TraceHitItem = Cast<AItem>(ItemTraceResult.GetActor());
+			if(TraceHitItem)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("ITEM_IN"));
+			}
+			if(TraceHitItemLastFrame)
+			{
+				if(TraceHitItem != TraceHitItemLastFrame)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("ITEM_OUT"));
+				}
+			}
+
+			TraceHitItemLastFrame = TraceHitItem;
+		}	
 	}
 }
 
