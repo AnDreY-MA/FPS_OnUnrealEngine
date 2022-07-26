@@ -27,8 +27,8 @@ ACharacterController::ACharacterController() :
 	InteractBox = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractiveBox"));
 	InteractBox->SetupAttachment(GetRootComponent());
 
-	Hand = CreateDefaultSubobject<USphereComponent>(TEXT("Hand"));
-	Hand->SetupAttachment(GetRootComponent());
+	Hand = CreateDefaultSubobject<USceneComponent>(TEXT("Hand"));
+	Hand->SetupAttachment(FirstPersonCamera);
 
 }
 
@@ -64,7 +64,8 @@ void ACharacterController::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ACharacterController::StartCrouch);
 	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ACharacterController::StopCrouch);
-	
+
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACharacterController::PickupObject);
 
 }
 
@@ -209,6 +210,19 @@ void ACharacterController::TraceForItems()
 			TraceHitItemLastFrame = TraceHitItem;
 		}	
 	}
+}
+
+void ACharacterController::PickupObject()
+{
+	if(TraceHitItem)
+	{
+		TraceHitItem->Pickup(FirstPersonCamera, Hand);
+	}
+}
+
+void ACharacterController::DropObject()
+{
+	
 }
 
 

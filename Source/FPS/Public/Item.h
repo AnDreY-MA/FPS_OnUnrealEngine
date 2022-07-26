@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "InteractInterface.h"
+#include "Camera/CameraComponent.h"
 #include "Item.generated.h"
 
 UCLASS()
@@ -25,6 +26,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual void Interact() override;
+
+    UFUNCTION()
+	void Pickup(UCameraComponent* PlayerCamera, USceneComponent* HoldComp);
 	
 private:
 
@@ -36,5 +40,11 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item", meta=(AllowPrivateAccess = "true"))
 	class USphereComponent* AreaSphere;
+
+	UPROPERTY(EditAnywhere)
+	USceneComponent* HoldingComponent;
+
+	bool bHolding;
+	bool bGravity;
 
 };

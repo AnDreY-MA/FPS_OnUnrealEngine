@@ -4,16 +4,22 @@
 #include "Item.h"
 
 #include "CharacterController.h"
+#include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 
 // Sets default values
-AItem::AItem()
+AItem::AItem() :
+	bHolding(false),
+	bGravity(true)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	ItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ItemMesh"));
+	ItemMesh->SetSimulatePhysics(true);
+	ItemMesh->SetEnableGravity(true);
+	ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	SetRootComponent(ItemMesh);
 
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
@@ -38,11 +44,33 @@ void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(bHolding && HoldingComponent)
+	{
+		SetActorLocation(HoldingComponent->GetComponentLocation());
+	}
+
 }
 
 void AItem::Interact()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Interact"));
+}
+
+void AItem::Pickup(UCameraComponent* PlayerCamera, USceneComponent* HoldComp)
+{
+	HoldingComponent = HoldComp;
+	
+	bHolding = !bHolding;
+	bGravity = !bGravity;
+	ItemMesh->SetEnableGravity(bGravity);
+	ItemMesh->SetSimulatePhysics(bHolding ? false : true);
+	ItemMesh->SetCollisionEnabled(bHolding ? ECollisionEnabled::NoCollision : ECollisionEnabled::QueryAndPhysics);
+
+	if(!bHolding)
+	{
+		FVector ForwardVector = PlayerCamera->GetForwardVector();
+		ItemMesh->AddForce(ForwardVector * 10000 * ItemMesh->GetMass());
+	}
 }
 
 
