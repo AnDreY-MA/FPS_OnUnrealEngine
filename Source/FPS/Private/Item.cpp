@@ -4,6 +4,7 @@
 #include "Item.h"
 
 #include "CharacterController.h"
+#include "IDetailTreeNode.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
@@ -16,7 +17,7 @@ AItem::AItem() :
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	ItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ItemMesh"));
+	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemMesh"));
 	ItemMesh->SetSimulatePhysics(true);
 	ItemMesh->SetEnableGravity(true);
 	ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -24,7 +25,7 @@ AItem::AItem() :
 
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	CollisionBox->SetupAttachment(ItemMesh);
-	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 
 	AreaSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AreaSphere"));
@@ -53,7 +54,7 @@ void AItem::Tick(float DeltaTime)
 
 void AItem::Interact()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Interact"));
+	
 }
 
 void AItem::Pickup(UCameraComponent* PlayerCamera, USceneComponent* HoldComp)

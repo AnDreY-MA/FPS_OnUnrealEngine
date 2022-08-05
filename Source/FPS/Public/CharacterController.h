@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InteractInterface.h"
+#include "PlayerInteraction.h"
 #include "GameFramework/Character.h"
 #include "CharacterController.generated.h"
 
@@ -26,10 +27,7 @@ protected:
 	void LookUp(float Value);
 	void StartCrouch();
 	void StopCrouch();
-
-	bool TraceUnderCrosshair(FHitResult& OutHitResult, FVector& OutHitLocation);
-	void TraceForItems();
-
+	
 	void PickupObject();
 	void DropObject();
 
@@ -56,21 +54,16 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	float BaseLookRate;
-
+	
 	// Interaction
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactive, meta = (AllowPrivateAccess = "true"))
+	UPlayerInteraction* InteractionClass;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactive, meta = (AllowPrivateAccess = "true"))
     class UBoxComponent* InteractBox;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactive, meta = (AllowPrivateAccess = "true"))
 	USceneComponent* Hand;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class AItem* TraceHitItemLastFrame = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	AItem* TraceHitItem = nullptr;
-	
-	bool bShouldTraceForItems;
 	
 	IInteractInterface* Interaction = nullptr;
 	

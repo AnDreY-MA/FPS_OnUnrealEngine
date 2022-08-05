@@ -14,8 +14,7 @@
 // Sets default values
 ACharacterController::ACharacterController() :
 	BaseTurnRate(45.f),
-	BaseLookRate(45.f),
-	bShouldTraceForItems(false)
+	BaseLookRate(45.f)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -29,6 +28,9 @@ ACharacterController::ACharacterController() :
 
 	Hand = CreateDefaultSubobject<USceneComponent>(TEXT("Hand"));
 	Hand->SetupAttachment(FirstPersonCamera);
+
+	InteractionClass = CreateDefaultSubobject<UPlayerInteraction>(TEXT("Interaction"));
+	InteractionClass->DiactivateTraceForItems();
 
 }
 
@@ -46,7 +48,10 @@ void ACharacterController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	TraceForItems();
+	if(InteractionClass)
+	{
+		InteractionClass->TraceForItems();
+	}
 
 }
 
@@ -109,7 +114,10 @@ void ACharacterController::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedC
 		if(Interaction)
 		{
 			Interaction->Interact();
-			bShouldTraceForItems = true;
+			if(InteractionClass)
+			{
+				InteractionClass->SetActivateTraceForItems();
+			}
 		}
 	}
 	
@@ -123,7 +131,10 @@ void ACharacterController::OnSphereEndOverlap(UPrimitiveComponent* OverlappedCom
 		if(Interaction)
 		{
 			Interaction->Interact();
-			bShouldTraceForItems = false;
+			if(InteractionClass)
+			{
+				InteractionClass->DiactivateTraceForItems();
+			}
 		}
 	}
 }
@@ -144,85 +155,12 @@ void ACharacterController::StopCrouch()
 	
 }
 
-// Interaction with Item
-bool ACharacterController::TraceUnderCrosshair(FHitResult& OutHitResult, FVector& OutHitLocation)
-{
-	FVector2D VieportSize;
-	if(GEngine && GEngine->GameViewport)
-	{
-		GEngine->GameViewport->GetViewportSize(VieportSize);
-	}
-
-	FVector2D CrosshairLocation(
-		VieportSize.X / 2.f, VieportSize.Y / 2.f);
-	FVector CrosshairWorldPosition;
-	FVector CrosshairWorldDirection;
-
-	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
-		UGameplayStatics::GetPlayerController(this, 0),
-		CrosshairLocation,
-		CrosshairWorldPosition,
-		CrosshairWorldDirection);
-
-	if(bScreenToWorld)
-	{
-		const FVector Start = CrosshairWorldPosition;
-		const FVector End = Start + CrosshairWorldDirection * 5000.f;
-		OutHitLocation = End;
-
-		GetWorld()->LineTraceSingleByChannel(
-			OutHitResult,
-			Start,
-			End,
-			ECollisionChannel::ECC_Visibility);
-		if(OutHitResult.bBlockingHit)
-		{
-			OutHitLocation = OutHitResult.Location;
-			return true;
-		}
-	}
-	return false;
-}
-
-void ACharacterController::TraceForItems()
-{
-	if(bShouldTraceForItems)
-	{
-		FHitResult ItemTraceResult;
-		FVector HitLocation;
-		TraceUnderCrosshair(ItemTraceResult, HitLocation);
-
-		if (ItemTraceResult.bBlockingHit)
-		{
-			TraceHitItem = Cast<AItem>(ItemTraceResult.GetActor());
-			if(TraceHitItem)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("ITEM_IN"));
-			}
-			if(TraceHitItemLastFrame)
-			{
-				if(TraceHitItem != TraceHitItemLastFrame)
-				{
-					UE_LOG(LogTemp, Warning, TEXT("ITEM_OUT"));
-				}
-			}
-
-			TraceHitItemLastFrame = TraceHitItem;
-		}	
-	}
-}
-
 void ACharacterController::PickupObject()
 {
-	if(TraceHitItem)
-	{
-		TraceHitItem->Pickup(FirstPersonCamera, Hand);
-	}
+	InteractionClass->PickupObject(FirstPersonCamera, Hand);
 }
 
 void ACharacterController::DropObject()
 {
 	
 }
-
-

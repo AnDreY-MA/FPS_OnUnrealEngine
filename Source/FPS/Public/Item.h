@@ -32,8 +32,8 @@ public:
 	
 private:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item", meta=(AllowPrivateAccess = "true"))
-	USkeletalMeshComponent* ItemMesh;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item", meta=(AllowPrivateAccess = "true"))
+	UStaticMeshComponent* ItemMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item", meta=(AllowPrivateAccess = "true"))
 	class UBoxComponent* CollisionBox;
@@ -43,6 +43,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	USceneComponent* HoldingComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item", meta=(AllowPrivateAccess = "true"))
+	UMaterialInstance* OutlineMaterial;
 
 	bool bHolding;
 	bool bGravity;
