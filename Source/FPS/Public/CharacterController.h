@@ -27,6 +27,7 @@ protected:
 	void LookUp(float Value);
 	void StartCrouch();
 	void StopCrouch();
+	void CreateUserWidget();
 	
 	void PickupObject();
 	void DropObject();
@@ -47,7 +48,7 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FirstPersonCamera;
+	UCameraComponent* FirstPersonCamera;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	float BaseTurnRate;
@@ -66,5 +67,12 @@ private:
 	USceneComponent* Hand;
 	
 	IInteractInterface* Interaction = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UUserWidget> DefaultWidget;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE EHandState GetStateHand() const { return InteractionClass->GetHandState(); }
 	
 };

@@ -4,10 +4,10 @@
 #include "CharacterController.h"
 
 #include "Item.h"
+#include "Blueprint/UserWidget.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -41,17 +41,17 @@ void ACharacterController::BeginPlay()
 
     InteractBox->OnComponentBeginOverlap.AddDynamic(this, &ACharacterController::OnSphereBeginOverlap);
 	InteractBox->OnComponentEndOverlap.AddDynamic(this, &ACharacterController::OnSphereEndOverlap);
+
+	CreateUserWidget();
+	
 }
 
 // Called every frame
 void ACharacterController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if(InteractionClass)
-	{
-		InteractionClass->TraceForItems();
-	}
+	
+	InteractionClass->TraceForItems();
 
 }
 
@@ -113,11 +113,7 @@ void ACharacterController::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedC
 		Interaction = Cast<IInteractInterface>(OtherActor);
 		if(Interaction)
 		{
-			Interaction->Interact();
-			if(InteractionClass)
-			{
-				InteractionClass->SetActivateTraceForItems();
-			}
+			InteractionClass->SetActivateTraceForItems();
 		}
 	}
 	
@@ -130,11 +126,7 @@ void ACharacterController::OnSphereEndOverlap(UPrimitiveComponent* OverlappedCom
 		Interaction = Cast<IInteractInterface>(OtherActor);
 		if(Interaction)
 		{
-			Interaction->Interact();
-			if(InteractionClass)
-			{
-				InteractionClass->DiactivateTraceForItems();
-			}
+			InteractionClass->DiactivateTraceForItems();
 		}
 	}
 }
@@ -153,6 +145,16 @@ void ACharacterController::StopCrouch()
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	ACharacter::UnCrouch();
 	
+}
+
+void ACharacterController::CreateUserWidget()
+{
+	if(DefaultWidget)
+	{
+		UUserWidget* UserWidget = CreateWidget<UUserWidget>(GetWorld(), DefaultWidget);
+		UserWidget->AddToViewport();
+		UserWidget->SetVisibility(ESlateVisibility::Visible);
+	}
 }
 
 void ACharacterController::PickupObject()

@@ -6,6 +6,11 @@
 #include "Item.h"
 #include "Kismet/GameplayStatics.h"
 
+UPlayerInteraction::UPlayerInteraction()
+{
+	HandState = EHandState::EHS_Default;
+}
+
 void UPlayerInteraction::TraceForItems()
 {
 	if(bActiveTraceForItems)
@@ -20,12 +25,14 @@ void UPlayerInteraction::TraceForItems()
 			if(TraceHitItem)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("ITEM_IN"));
+				HandState = EHandState::EHS_Grab;
 			}
 			if(TraceHitItemLastFrame)
 			{
 				if(TraceHitItem != TraceHitItemLastFrame)
 				{
 					UE_LOG(LogTemp, Warning, TEXT("ITEM_OUT"));
+					HandState = EHandState::EHS_Default;
 				}
 			}
 
@@ -50,6 +57,11 @@ void UPlayerInteraction::PickupObject(UCameraComponent* PlayerCamera, USceneComp
 	{
 		TraceHitItem->Pickup(PlayerCamera, Hand);
 	}
+}
+
+EHandState UPlayerInteraction::GetHandState() const
+{
+	return HandState;
 }
 
 bool UPlayerInteraction::TraceUnderCrosshair(FHitResult& OutHitResult, FVector& OutHitLocation)
