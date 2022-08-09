@@ -3,12 +3,18 @@
 
 #include "PlayerInteraction.h"
 
-#include "Item.h"
+#include "GrabObject.h"
 #include "Kismet/GameplayStatics.h"
 
-UPlayerInteraction::UPlayerInteraction()
+UPlayerInteraction::UPlayerInteraction() :
+	HandState(EHandState::EHS_Default)
 {
-	HandState = EHandState::EHS_Default;
+
+}
+
+void UPlayerInteraction::Interact()
+{
+	
 }
 
 void UPlayerInteraction::TraceForItems()
@@ -21,17 +27,15 @@ void UPlayerInteraction::TraceForItems()
 
 		if (ItemTraceResult.bBlockingHit)
 		{
-			TraceHitItem = Cast<AItem>(ItemTraceResult.GetActor());
+			TraceHitItem = Cast<AGrabObject>(ItemTraceResult.GetActor());
 			if(TraceHitItem)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("ITEM_IN"));
 				HandState = EHandState::EHS_Grab;
 			}
 			if(TraceHitItemLastFrame)
 			{
 				if(TraceHitItem != TraceHitItemLastFrame)
 				{
-					UE_LOG(LogTemp, Warning, TEXT("ITEM_OUT"));
 					HandState = EHandState::EHS_Default;
 				}
 			}
@@ -49,6 +53,7 @@ void UPlayerInteraction::SetActivateTraceForItems()
 void UPlayerInteraction::DiactivateTraceForItems()
 {
 	bActiveTraceForItems = false;
+	HandState = EHandState::EHS_Default;
 }
 
 void UPlayerInteraction::PickupObject(UCameraComponent* PlayerCamera, USceneComponent* Hand)

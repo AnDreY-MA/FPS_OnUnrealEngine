@@ -24,4 +24,6 @@ class FPS_API IInteractInterface
 public:
 
 virtual void Interact();
+	virtual void Pickup(class UCameraComponent* PlayerCamera, USceneComponent* HoldComp);
+	
 };

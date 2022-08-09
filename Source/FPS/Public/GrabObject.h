@@ -3,19 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 #include "InteractInterface.h"
-#include "Camera/CameraComponent.h"
-#include "Item.generated.h"
+#include "GameFramework/Actor.h"
+#include "GrabObject.generated.h"
 
 UCLASS()
-class FPS_API AItem : public AActor, public IInteractInterface
+class FPS_API AGrabObject : public AActor, public IInteractInterface
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AItem();
+	AGrabObject();
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,8 +26,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void Interact() override;
 
-    UFUNCTION()
-	void Pickup(UCameraComponent* PlayerCamera, USceneComponent* HoldComp);
+	UFUNCTION()
+	virtual  void Pickup(UCameraComponent* PlayerCamera, USceneComponent* HoldComp) override;
 	
 private:
 
@@ -43,9 +42,6 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	USceneComponent* HoldingComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item", meta=(AllowPrivateAccess = "true"))
-	UMaterialInstance* OutlineMaterial;
 
 	bool bHolding;
 	bool bGravity;

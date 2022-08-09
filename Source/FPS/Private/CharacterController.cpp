@@ -3,7 +3,6 @@
 
 #include "CharacterController.h"
 
-#include "Item.h"
 #include "Blueprint/UserWidget.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
@@ -14,7 +13,8 @@
 // Sets default values
 ACharacterController::ACharacterController() :
 	BaseTurnRate(45.f),
-	BaseLookRate(45.f)
+	BaseLookRate(45.f),
+	bHoldingItem(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -71,6 +71,7 @@ void ACharacterController::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ACharacterController::StopCrouch);
 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACharacterController::PickupObject);
+	///PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACharacterController::DropObject);
 
 }
 
@@ -159,10 +160,10 @@ void ACharacterController::CreateUserWidget()
 
 void ACharacterController::PickupObject()
 {
-	InteractionClass->PickupObject(FirstPersonCamera, Hand);
+		InteractionClass->PickupObject(FirstPersonCamera, Hand);
 }
 
 void ACharacterController::DropObject()
 {
-	
+
 }

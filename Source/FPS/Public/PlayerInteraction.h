@@ -26,6 +26,8 @@ class FPS_API UPlayerInteraction : public UPhysicsHandleComponent
 	
 public:
 	UPlayerInteraction();
+
+	void Interact();
 	
 	void TraceForItems();
 	void SetActivateTraceForItems();
@@ -34,11 +36,10 @@ public:
 	EHandState GetHandState() const;
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interactive, meta = (AllowPrivateAccess = "true"))
-	class AItem* TraceHitItemLastFrame = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interactive, meta = (AllowPrivateAccess = "true"))
-	AItem* TraceHitItem = nullptr;
+	class IInteractInterface* TraceHitItemLastFrame = nullptr;
+
+	IInteractInterface* TraceHitItem = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interactive, meta = (AllowPrivateAccess = "true"))
 	EHandState HandState;

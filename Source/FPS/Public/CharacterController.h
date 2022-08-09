@@ -66,6 +66,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactive, meta = (AllowPrivateAccess = "true"))
 	USceneComponent* Hand;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interactive, meta = (AllowPrivateAccess = "true"))
+    bool bHoldingItem;
+	
 	IInteractInterface* Interaction = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))

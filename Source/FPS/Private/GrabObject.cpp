@@ -1,20 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Item.h"
+#include "GrabObject.h"
 
 #include "CharacterController.h"
-#include "IDetailTreeNode.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 
 // Sets default values
-AItem::AItem() :
+AGrabObject::AGrabObject() :
 	bHolding(false),
 	bGravity(true)
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemMesh"));
@@ -34,14 +33,14 @@ AItem::AItem() :
 }
 
 // Called when the game starts or when spawned
-void AItem::BeginPlay()
+void AGrabObject::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void AItem::Tick(float DeltaTime)
+void AGrabObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -52,12 +51,12 @@ void AItem::Tick(float DeltaTime)
 
 }
 
-void AItem::Interact()
+void AGrabObject::Interact()
 {
 	
 }
 
-void AItem::Pickup(UCameraComponent* PlayerCamera, USceneComponent* HoldComp)
+void AGrabObject::Pickup(UCameraComponent* PlayerCamera, USceneComponent* HoldComp)
 {
 	HoldingComponent = HoldComp;
 	
@@ -73,7 +72,3 @@ void AItem::Pickup(UCameraComponent* PlayerCamera, USceneComponent* HoldComp)
 		ItemMesh->AddForce(ForwardVector * 10000 * ItemMesh->GetMass());
 	}
 }
-
-
-
-

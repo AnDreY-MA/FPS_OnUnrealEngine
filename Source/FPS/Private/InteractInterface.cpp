@@ -9,3 +9,7 @@ void IInteractInterface::Interact()
 {
 
 }
+
+void IInteractInterface::Pickup(UCameraComponent* PlayerCamera, USceneComponent* HoldComp)
+{
+}
