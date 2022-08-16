@@ -14,7 +14,8 @@
 ACharacterController::ACharacterController() :
 	BaseTurnRate(45.f),
 	BaseLookRate(45.f),
-	bHoldingItem(false)
+	bHoldingItem(false),
+	bClimbing(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -77,21 +78,27 @@ void ACharacterController::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 void ACharacterController::MoveForward(float Value)
 {
-	const FRotator Rotation = Controller->GetControlRotation();
-	const FRotator YawRotation {0, Rotation.Yaw, 0};
+	if(bClimbing == false)
+	{
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation {0, Rotation.Yaw, 0};
 
-	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	AddMovementInput(Direction, Value);
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		AddMovementInput(Direction, Value);
+	}
 	
 }
 
 void ACharacterController::MoveSide(float Value)
 {
-	const FRotator Rotation = Controller->GetControlRotation();
-	const FRotator YawRotation {0, Rotation.Yaw, 0 };
+	if(bClimbing == false)
+	{
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation {0, Rotation.Yaw, 0 };
 
-	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-	AddMovementInput(Direction, Value);
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		AddMovementInput(Direction, Value);
+	}
 	
 }
 

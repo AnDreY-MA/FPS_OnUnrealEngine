@@ -55,6 +55,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	float BaseLookRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool bClimbing;
 	
 	// Interaction
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactive, meta = (AllowPrivateAccess = "true"))
