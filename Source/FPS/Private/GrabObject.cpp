@@ -64,7 +64,6 @@ void AGrabObject::Pickup(UCameraComponent* PlayerCamera, USceneComponent* HoldCo
 	bGravity = !bGravity;
 	ItemMesh->SetEnableGravity(bGravity);
 	ItemMesh->SetSimulatePhysics(bHolding ? false : true);
-	ItemMesh->SetCollisionEnabled(bHolding ? ECollisionEnabled::NoCollision : ECollisionEnabled::QueryAndPhysics);
 
 	if(!bHolding)
 	{

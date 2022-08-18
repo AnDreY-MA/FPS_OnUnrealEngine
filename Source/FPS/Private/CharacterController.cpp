@@ -63,7 +63,7 @@ void ACharacterController::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ACharacterController::MoveForward);
 	PlayerInputComponent->BindAxis("MoveSide", this, &ACharacterController::MoveSide);
-
+	
 	PlayerInputComponent->BindAxis("Turn", this, &ACharacterController::Turn);
 	PlayerInputComponent->BindAxis("LookUp", this, &ACharacterController::LookUp);
 
@@ -71,8 +71,7 @@ void ACharacterController::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ACharacterController::StartCrouch);
 	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ACharacterController::StopCrouch);
 
-	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACharacterController::PickupObject);
-	///PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACharacterController::DropObject);
+	PlayerInputComponent->BindAction("Pickup", IE_Pressed, this, &ACharacterController::PickupObject);
 
 }
 
@@ -167,6 +166,7 @@ void ACharacterController::CreateUserWidget()
 
 void ACharacterController::PickupObject()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Pickup"));
 		InteractionClass->PickupObject(FirstPersonCamera, Hand);
 }
 
