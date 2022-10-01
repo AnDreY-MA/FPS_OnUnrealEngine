@@ -4,9 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "InteractInterface.h"
-#include "PlayerInteraction.h"
+#include "Items/ItemData.h"
 #include "GameFramework/Character.h"
 #include "CharacterController.generated.h"
+
+struct FItemData;
+class AItem;
+class UInventory;
+class AFoodItem;
 
 UCLASS()
 class FPS_API ACharacterController : public ACharacter
@@ -18,8 +23,6 @@ public:
 	ACharacterController();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 	void MoveForward(float Value);
 	void MoveSide(float Value);
@@ -27,27 +30,18 @@ protected:
 	void LookUp(float Value);
 	void StartCrouch();
 	void StopCrouch();
-	void CreateUserWidget();
-	
-	void PickupObject();
-	void DropObject();
 
-	UFUNCTION()
-	void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-	void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	UFUNCTION(BlueprintCallable, Category="TEST")
+	void UseItem(TSubclassOf<AItem> ItemSubclass);
+	
+	void Interact();
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCamera;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -59,26 +53,19 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	bool bClimbing;
 	
-	// Interaction
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactive, meta = (AllowPrivateAccess = "true"))
-	UPlayerInteraction* InteractionClass;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactive, meta = (AllowPrivateAccess = "true"))
-    class UBoxComponent* InteractBox;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactive, meta = (AllowPrivateAccess = "true"))
-	USceneComponent* Hand;
-	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interactive, meta = (AllowPrivateAccess = "true"))
     bool bHoldingItem;
-	
-	IInteractInterface* Interaction = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<UUserWidget> DefaultWidget;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	float Health;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items", meta = (AllowPrivateAccess = "true"))
+	UInventory* Inventory;
 
 public:
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE EHandState GetStateHand() const { return InteractionClass->GetHandState(); }
+
+	UInventory* GetInventory() { return Inventory; }
+
+	void Heal(AFoodItem* FoodItem, float Value);
 	
 };

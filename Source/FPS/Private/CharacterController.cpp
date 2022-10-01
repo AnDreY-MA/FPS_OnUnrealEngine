@@ -3,9 +3,11 @@
 
 #include "CharacterController.h"
 
+#include "IntertableInterface.h"
 #include "Blueprint/UserWidget.h"
 #include "Camera/CameraComponent.h"
-#include "Components/BoxComponent.h"
+#include "Items/Inventory.h"
+#include "Items/Item.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -14,6 +16,7 @@
 ACharacterController::ACharacterController() :
 	BaseTurnRate(45.f),
 	BaseLookRate(45.f),
+	Health(90.f),
 	bHoldingItem(false),
 	bClimbing(false)
 {
@@ -23,36 +26,9 @@ ACharacterController::ACharacterController() :
 	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("First Person Camera"));
 	FirstPersonCamera->SetupAttachment(GetRootComponent());
 	FirstPersonCamera->bUsePawnControlRotation = true;
-	
-	InteractBox = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractiveBox"));
-	InteractBox->SetupAttachment(GetRootComponent());
 
-	Hand = CreateDefaultSubobject<USceneComponent>(TEXT("Hand"));
-	Hand->SetupAttachment(FirstPersonCamera);
-
-	InteractionClass = CreateDefaultSubobject<UPlayerInteraction>(TEXT("Interaction"));
-	InteractionClass->DiactivateTraceForItems();
-
-}
-
-// Called when the game starts or when spawned
-void ACharacterController::BeginPlay()
-{
-	Super::BeginPlay();
-
-    InteractBox->OnComponentBeginOverlap.AddDynamic(this, &ACharacterController::OnSphereBeginOverlap);
-	InteractBox->OnComponentEndOverlap.AddDynamic(this, &ACharacterController::OnSphereEndOverlap);
-
-	CreateUserWidget();
-	
-}
-
-// Called every frame
-void ACharacterController::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	
-	InteractionClass->TraceForItems();
+	Inventory = CreateDefaultSubobject<UInventory>(TEXT("Inventory"));
+	Inventory->SetCapacity(10);
 
 }
 
@@ -71,8 +47,17 @@ void ACharacterController::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ACharacterController::StartCrouch);
 	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ACharacterController::StopCrouch);
 
-	PlayerInputComponent->BindAction("Pickup", IE_Pressed, this, &ACharacterController::PickupObject);
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACharacterController::Interact);
 
+}
+
+void ACharacterController::Heal(AFoodItem* FoodItem, float Value)
+{
+	if(Value > 0 && FoodItem && Health < 100)
+	{
+		Health += Value;
+		UE_LOG(LogTemp, Warning, TEXT("Healing"));
+	}
 }
 
 void ACharacterController::MoveForward(float Value)
@@ -113,31 +98,6 @@ void ACharacterController::LookUp(float Value)
 	
 }
 
-void ACharacterController::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if(OtherActor)
-	{
-		Interaction = Cast<IInteractInterface>(OtherActor);
-		if(Interaction)
-		{
-			InteractionClass->SetActivateTraceForItems();
-		}
-	}
-	
-}
-
-void ACharacterController::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if(OtherActor)
-	{
-		Interaction = Cast<IInteractInterface>(OtherActor);
-		if(Interaction)
-		{
-			InteractionClass->DiactivateTraceForItems();
-		}
-	}
-}
-
 void ACharacterController::StartCrouch()
 {
 	GetCapsuleComponent()->SetCapsuleHalfHeight(44.f);
@@ -154,23 +114,30 @@ void ACharacterController::StopCrouch()
 	
 }
 
-void ACharacterController::CreateUserWidget()
+void ACharacterController::UseItem(TSubclassOf<AItem> ItemSubclass)
 {
-	if(DefaultWidget)
+	if(ItemSubclass)
 	{
-		UUserWidget* UserWidget = CreateWidget<UUserWidget>(GetWorld(), DefaultWidget);
-		UserWidget->AddToViewport();
-		UserWidget->SetVisibility(ESlateVisibility::Visible);
+		if(AItem* UsingItem = ItemSubclass.GetDefaultObject())
+		{
+			UsingItem->Use(this);
+		}
 	}
+	
 }
 
-void ACharacterController::PickupObject()
+void ACharacterController::Interact()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Pickup"));
-		InteractionClass->PickupObject(FirstPersonCamera, Hand);
-}
+	const FVector Start = FirstPersonCamera->GetComponentLocation();
+	const FVector End = Start + FirstPersonCamera->GetForwardVector() * 500.f;
 
-void ACharacterController::DropObject()
-{
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	///Params.AddIgnoredActor(this);
 
+	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
+	if(IIntertableInterface* Interface = Cast<IIntertableInterface>(HitResult.GetActor()))
+	{
+		Interface->Interact(this);
+	}
 }
