@@ -3,6 +3,8 @@
 
 #include "Items/Inventory.h"
 #include "Items/ItemData.h"
+#include "Items/Item.h"
+#include "Engine/DataTable.h"
 
 // Sets default values for this component's properties
 UInventory::UInventory()
@@ -22,5 +24,16 @@ void UInventory::SetCapacity(int32 Amount)
 void UInventory::AddItem(FItemData Item)
 {
 	Items.Add(Item);
+	OnInventoryUpdated.Broadcast();
+
+}
+
+void UInventory::AddItemToMap(FName ItemName, int32 Quantity)
+{
+	int32 Count = ItemsInventory.FindOrAdd(ItemName);
+	Count += Quantity;
+	
+	ItemsInventory.Add(ItemName, Count);
+	
 	OnInventoryUpdated.Broadcast();
 }

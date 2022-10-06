@@ -17,7 +17,7 @@ struct FItemData : public FTableRowBase
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UStaticMesh* Mesh;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FText Name;
+	FName Name;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UTexture2D* Image;
 

@@ -22,6 +22,7 @@ public:
 
 	void SetCapacity(int32 Amount);
 	void AddItem(FItemData Item);
+	void AddItemToMap(FName ItemName, int32 Quantity);
 
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
 	FOnInventoryUpdated OnInventoryUpdated;
@@ -30,6 +31,9 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", meta=(AllowPrivateAccess))
 	TArray<FItemData> Items;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", meta=(AllowPrivateAccess))
+	TMap<FName, int32> ItemsInventory;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", meta=(AllowPrivateAccess))
 	int32 Capacity;

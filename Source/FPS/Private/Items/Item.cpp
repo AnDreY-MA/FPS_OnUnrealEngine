@@ -25,8 +25,12 @@ AItem::AItem()
 void AItem::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FItemData* It = DataTableItem->FindRow<FItemData>(Name, "");
+
+	ItemData.Name = It->Name;
 	
-	MeshComponent->SetStaticMesh(ItemData.Mesh);
+	MeshComponent->SetStaticMesh(It->Mesh);
 	
 }
 
@@ -35,6 +39,7 @@ void AItem::Interact(class ACharacterController* Interator)
 	if(Interator)
 	{
 		Interator->GetInventory()->AddItem(ItemData);
+		Interator->GetInventory()->AddItemToMap(Name, 1);
 	}
 
 	Destroy();
