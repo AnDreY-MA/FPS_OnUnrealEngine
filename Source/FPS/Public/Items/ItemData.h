@@ -17,6 +17,8 @@ struct FItemData : public FTableRowBase
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UStaticMesh* Mesh;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	USkeletalMesh* WeaponMesh;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FName Name;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UTexture2D* Image;

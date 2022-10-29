@@ -8,7 +8,9 @@
 #include "Camera/CameraComponent.h"
 #include "Items/Inventory.h"
 #include "Items/Item.h"
+#include "Items/Weapon.h"
 #include "Components/CapsuleComponent.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -29,6 +31,8 @@ ACharacterController::ACharacterController() :
 
 	Inventory = CreateDefaultSubobject<UInventory>(TEXT("Inventory"));
 	Inventory->SetCapacity(10);
+
+	AmmoMagazine.Add(EAmmoType::EAT_PISTOL, 20);
 
 }
 
@@ -51,12 +55,44 @@ void ACharacterController::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 }
 
+void ACharacterController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	const FVector Start = FirstPersonCamera->GetComponentLocation();
+	const FVector End = Start + FirstPersonCamera->GetForwardVector() * 500.f;
+
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	///Params.AddIgnoredActor(this);
+
+	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
+	if(IIntertableInterface* Interface = Cast<IIntertableInterface>(HitResult.GetActor()))
+	{
+		Interface->LookAt();
+	}
+}
+
 void ACharacterController::Heal(AFoodItem* FoodItem, float Value)
 {
 	if(Value > 0 && FoodItem && Health < 100)
 	{
 		Health += Value;
 		UE_LOG(LogTemp, Warning, TEXT("Healing"));
+	}
+}
+
+void ACharacterController::EquipWeapon(AWeapon* WeaponToEquip)
+{
+	if(WeaponToEquip)
+	{
+		const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(FName("WeaponSocket"));
+		if(HandSocket)
+		{
+			HandSocket->AttachActor(WeaponToEquip, GetMesh());
+			UE_LOG(LogTemp, Warning, TEXT("Equiped"));
+		}
+		EquippedWeapon = WeaponToEquip;
 	}
 }
 

@@ -26,5 +26,6 @@ class FPS_API IIntertableInterface
 public:
 	virtual void Interact(ACharacterController* Interator);
 	virtual void Use(ACharacterController* Character);
+	virtual void LookAt();
 	
 };

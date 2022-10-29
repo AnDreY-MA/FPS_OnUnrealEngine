@@ -24,8 +24,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-private:
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item", meta = (AllowPrivateAccess = "true"))
 	class UDataTable* DataTableItem;
 	
@@ -34,6 +32,8 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item", meta = (AllowPrivateAccess = "true"))
 	FItemData ItemData;
+
+private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* MeshComponent;
@@ -45,5 +45,10 @@ public:
 	virtual void Interact(ACharacterController* Interator) override;
 
 	virtual void Use(ACharacterController* Character) override;
+
+	virtual void LookAt() override;
+
+	UFUNCTION(BlueprintCallable)
+	void SetDataTable(UDataTable* DataTable) { DataTableItem = DataTable; }
 
 };

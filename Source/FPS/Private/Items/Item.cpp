@@ -5,6 +5,7 @@
 
 #include "Components/CapsuleComponent.h"
 #include "CharacterController.h"
+#include "Engine/DataTable.h"
 #include "Items/Inventory.h"
 
 // Sets default values
@@ -29,8 +30,10 @@ void AItem::BeginPlay()
 	FItemData* It = DataTableItem->FindRow<FItemData>(Name, "");
 
 	ItemData.Name = It->Name;
-	
-	MeshComponent->SetStaticMesh(It->Mesh);
+	if (It->Mesh)
+	{
+		MeshComponent->SetStaticMesh(It->Mesh);
+	}
 	
 }
 
@@ -38,7 +41,6 @@ void AItem::Interact(class ACharacterController* Interator)
 {
 	if(Interator)
 	{
-		Interator->GetInventory()->AddItem(ItemData);
 		Interator->GetInventory()->AddItemToMap(Name, 1);
 	}
 
@@ -49,6 +51,11 @@ void AItem::Interact(class ACharacterController* Interator)
 void AItem::Use(ACharacterController* Character)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Using Item"));
+}
+
+void AItem::LookAt()
+{
+	IIntertableInterface::LookAt();
 }
 
 

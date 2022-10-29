@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "InteractInterface.h"
 #include "Items/ItemData.h"
+#include "Items/AmmoType.h"
 #include "GameFramework/Character.h"
 #include "CharacterController.generated.h"
 
@@ -12,6 +13,7 @@ struct FItemData;
 class AItem;
 class UInventory;
 class AFoodItem;
+class AWeapon;
 
 UCLASS()
 class FPS_API ACharacterController : public ACharacter
@@ -39,6 +41,7 @@ protected:
 public:	
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void Tick(float DeltaSeconds) override;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -62,10 +65,19 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items", meta = (AllowPrivateAccess = "true"))
 	UInventory* Inventory;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	AWeapon* EquippedWeapon;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	TMap<EAmmoType, int32> AmmoMagazine;
+	
 public:
 
 	UInventory* GetInventory() { return Inventory; }
 
 	void Heal(AFoodItem* FoodItem, float Value);
+
+	UFUNCTION(BlueprintCallable)
+	void EquipWeapon(AWeapon* WeaponToEquip);
 	
 };

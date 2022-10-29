@@ -10,3 +10,8 @@ void IIntertableInterface::Interact(class ACharacterController* Interatory)
 void IIntertableInterface::Use(ACharacterController* Character)
 {
 }
+
+void IIntertableInterface::LookAt()
+{
+	
+}
