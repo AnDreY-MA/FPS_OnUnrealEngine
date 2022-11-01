@@ -20,7 +20,8 @@ ACharacterController::ACharacterController() :
 	BaseLookRate(45.f),
 	Health(90.f),
 	bHoldingItem(false),
-	bClimbing(false)
+	bClimbing(false),
+	bEquiped(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -52,6 +53,7 @@ void ACharacterController::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ACharacterController::StopCrouch);
 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACharacterController::Interact);
+	PlayerInputComponent->BindAction("DropWeapon", IE_Pressed, this, &ACharacterController::DropWeapon);
 
 }
 
@@ -82,19 +84,7 @@ void ACharacterController::Heal(AFoodItem* FoodItem, float Value)
 	}
 }
 
-void ACharacterController::EquipWeapon(AWeapon* WeaponToEquip)
-{
-	if(WeaponToEquip)
-	{
-		const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(FName("WeaponSocket"));
-		if(HandSocket)
-		{
-			HandSocket->AttachActor(WeaponToEquip, GetMesh());
-			UE_LOG(LogTemp, Warning, TEXT("Equiped"));
-		}
-		EquippedWeapon = WeaponToEquip;
-	}
-}
+
 
 void ACharacterController::MoveForward(float Value)
 {
@@ -147,6 +137,29 @@ void ACharacterController::StopCrouch()
 	GetCapsuleComponent()->SetCapsuleHalfHeight(88.f);
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	ACharacter::UnCrouch();
+	
+}
+
+void ACharacterController::EquipWeapon(AWeapon* WeaponToEquip)
+{
+	if(WeaponToEquip)
+	{
+		const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(FName("WeaponSocket"));
+		if(HandSocket)
+		{
+			HandSocket->AttachActor(WeaponToEquip, GetMesh());
+			bEquiped = true;
+		}
+		EquippedWeapon = WeaponToEquip;
+	}
+}
+void ACharacterController::DropWeapon()
+{
+	if(EquippedWeapon)
+	{
+		EquippedWeapon->Destroy();
+		bEquiped = false;
+	}
 	
 }
 

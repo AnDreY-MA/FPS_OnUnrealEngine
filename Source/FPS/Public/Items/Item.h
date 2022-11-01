@@ -38,9 +38,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* MeshComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item", meta = (AllowPrivateAccess = "true"))
-	UCapsuleComponent* CapsuleComponent;
-
 public:
 	virtual void Interact(ACharacterController* Interator) override;
 

@@ -3,7 +3,6 @@
 
 #include "Items/Item.h"
 
-#include "Components/CapsuleComponent.h"
 #include "CharacterController.h"
 #include "Engine/DataTable.h"
 #include "Items/Inventory.h"
@@ -16,9 +15,6 @@ AItem::AItem()
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	SetRootComponent(MeshComponent);
-
-	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
-	CapsuleComponent->SetupAttachment(GetRootComponent());
 	
 }
 

@@ -70,8 +70,12 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
 	TMap<EAmmoType, int32> AmmoMagazine;
+
+	bool bEquiped;
 	
 public:
+
+	bool GetEquiped() { return bEquiped; }
 
 	UInventory* GetInventory() { return Inventory; }
 
@@ -79,5 +83,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void EquipWeapon(AWeapon* WeaponToEquip);
+	UFUNCTION(BlueprintCallable)
+	void DropWeapon();
 	
 };

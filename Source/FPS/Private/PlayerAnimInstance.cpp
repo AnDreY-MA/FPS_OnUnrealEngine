@@ -13,5 +13,6 @@ void UPlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		FVector Velocity = Player->GetVelocity();
 		Velocity.Z = 0;
 		Speed = Velocity.Size();
+		bEquiped = Player->GetEquiped();
 	}
 }
