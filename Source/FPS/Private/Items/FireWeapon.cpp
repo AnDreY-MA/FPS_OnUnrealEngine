@@ -3,13 +3,29 @@
 
 #include "Items/FireWeapon.h"
 #include "CharacterController.h"
+#include "Engine/SkeletalMeshSocket.h"
+#include "Items/Bullet.h"
+#include "Tasks/GameplayTask_SpawnActor.h"
 
 AFireWeapon::AFireWeapon() :
-	AmmoType(EAmmoType::EAT_PISTOL),
+	AmmoType(EWeaponAmmoType::EAT_PISTOL),
 	Ammo(10),
 	MagazineCapacity(10)
 {
-	
+	MuzzleOffset = FVector(100.0f, 0.0f, 10.0f);
+}
+
+void AFireWeapon::Fire(ACharacterController* Character)
+{
+	const USkeletalMeshSocket* MuzzleSocket = SkeletalMeshComponent->GetSocketByName("Muzzle");
+	if(MuzzleSocket)
+	{
+		const APlayerController* Controller = Cast<APlayerController>(Character->GetController());
+		const FVector SocketLocation = MuzzleSocket->GetSocketLocation(SkeletalMeshComponent);
+		const FRotator SocketRotator = Controller->PlayerCameraManager->GetCameraRotation();
+		const FActorSpawnParameters ActorSpawnParameters;
+		GetWorld()->SpawnActor<ABullet>(Bullet, SocketLocation, SocketRotator, ActorSpawnParameters);
+	}
 }
 
 void AFireWeapon::Interact(ACharacterController* Interator)
@@ -19,7 +35,7 @@ void AFireWeapon::Interact(ACharacterController* Interator)
 
 void AFireWeapon::Use(ACharacterController* Character)
 {
-	Super::Use(Character);
+	Fire(Character);
 }
 
 void AFireWeapon::LookAt()

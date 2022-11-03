@@ -4,10 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Items/Weapon.h"
-#include "Items/AmmoType.h"
+#include "Items/WeaponAmmoType.h"
 #include "FireWeapon.generated.h"
-
-
 
 UCLASS()
 class FPS_API AFireWeapon : public AWeapon
@@ -17,11 +15,10 @@ class FPS_API AFireWeapon : public AWeapon
 public:
 	AFireWeapon();
 
-
 private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo", meta = (AllowPrivateAccess = "true"))
-	EAmmoType AmmoType;
+	EWeaponAmmoType AmmoType;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo", meta = (AllowPrivateAccess = "true"))
 	int32 Ammo;
@@ -29,7 +26,16 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo", meta = (AllowPrivateAccess = "true"))
 	int32 MagazineCapacity;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class ABullet> Bullet;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet", meta = (AllowPrivateAccess = "true"))
+    FVector MuzzleOffset;
+
+	void Fire(ACharacterController* Character);
+
 public:
+	
 	virtual void Interact(ACharacterController* Interator) override;
 
 	virtual void Use(ACharacterController* Character) override;

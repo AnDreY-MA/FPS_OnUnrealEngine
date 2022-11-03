@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InteractInterface.h"
+#include "Camera/CameraComponent.h"
 #include "Items/ItemData.h"
-#include "Items/AmmoType.h"
+#include "Items/WeaponAmmoType.h"
 #include "GameFramework/Character.h"
 #include "CharacterController.generated.h"
 
@@ -32,6 +32,7 @@ protected:
 	void LookUp(float Value);
 	void StartCrouch();
 	void StopCrouch();
+	void Attack();
 
 	UFUNCTION(BlueprintCallable, Category="TEST")
 	void UseItem(TSubclassOf<AItem> ItemSubclass);
@@ -41,11 +42,10 @@ protected:
 public:	
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual void Tick(float DeltaSeconds) override;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FirstPersonCamera;
+	class UCameraComponent* FirstPersonCamera;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	float BaseTurnRate;
@@ -59,6 +59,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interactive, meta = (AllowPrivateAccess = "true"))
     bool bHoldingItem;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
+	class UPlayerInteractionComponent* InteractionComponent;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
 	float Health;
 
@@ -69,7 +72,7 @@ private:
 	AWeapon* EquippedWeapon;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
-	TMap<EAmmoType, int32> AmmoMagazine;
+	TMap<EWeaponAmmoType, int32> AmmoMagazine;
 
 	bool bEquiped;
 	

@@ -4,6 +4,7 @@
 #include "CharacterController.h"
 
 #include "IntertableInterface.h"
+#include "PlayerInteractionComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Camera/CameraComponent.h"
 #include "Items/Inventory.h"
@@ -33,7 +34,9 @@ ACharacterController::ACharacterController() :
 	Inventory = CreateDefaultSubobject<UInventory>(TEXT("Inventory"));
 	Inventory->SetCapacity(10);
 
-	AmmoMagazine.Add(EAmmoType::EAT_PISTOL, 20);
+	InteractionComponent = CreateDefaultSubobject<UPlayerInteractionComponent>(TEXT("InteractionComponent"));
+
+	AmmoMagazine.Add(EWeaponAmmoType::EAT_PISTOL, 20);
 
 }
 
@@ -54,25 +57,8 @@ void ACharacterController::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACharacterController::Interact);
 	PlayerInputComponent->BindAction("DropWeapon", IE_Pressed, this, &ACharacterController::DropWeapon);
-
-}
-
-void ACharacterController::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	const FVector Start = FirstPersonCamera->GetComponentLocation();
-	const FVector End = Start + FirstPersonCamera->GetForwardVector() * 500.f;
-
-	FHitResult HitResult;
-	FCollisionQueryParams Params;
-	///Params.AddIgnoredActor(this);
-
-	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
-	if(IIntertableInterface* Interface = Cast<IIntertableInterface>(HitResult.GetActor()))
-	{
-		Interface->LookAt();
-	}
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ACharacterController::Attack);
+	
 }
 
 void ACharacterController::Heal(AFoodItem* FoodItem, float Value)
@@ -83,8 +69,6 @@ void ACharacterController::Heal(AFoodItem* FoodItem, float Value)
 		UE_LOG(LogTemp, Warning, TEXT("Healing"));
 	}
 }
-
-
 
 void ACharacterController::MoveForward(float Value)
 {
@@ -138,6 +122,17 @@ void ACharacterController::StopCrouch()
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	ACharacter::UnCrouch();
 	
+}
+
+void ACharacterController::Attack()
+{
+	if(EquippedWeapon)
+	{
+		EquippedWeapon->Use(this);
+	}
+
+	/*UKismetSystemLibrary KismetSystemLibrary;
+	KismetSystemLibrary.MoveComponentTo()*/
 }
 
 void ACharacterController::EquipWeapon(AWeapon* WeaponToEquip)

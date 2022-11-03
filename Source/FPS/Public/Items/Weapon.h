@@ -24,6 +24,7 @@ protected:
 	USkeletalMeshComponent* SkeletalMeshComponent;
 
 public:
+	
 	virtual void Interact(ACharacterController* Interator) override;
 
 	virtual void Use(ACharacterController* Character) override;
