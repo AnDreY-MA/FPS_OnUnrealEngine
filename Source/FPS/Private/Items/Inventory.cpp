@@ -10,7 +10,7 @@ UInventory::UInventory()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	AmmoMagazine.Add(EWeaponAmmoType::EAT_PISTOL, 20);
 }
 
 void UInventory::SetCapacity(int32 Amount)

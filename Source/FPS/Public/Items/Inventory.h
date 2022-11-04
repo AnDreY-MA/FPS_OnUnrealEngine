@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ItemData.h"
+#include "Items/WeaponAmmoType.h"
 #include "Components/ActorComponent.h"
 #include "Inventory.generated.h"
 
@@ -39,5 +40,8 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", meta=(AllowPrivateAccess))
 	int32 Capacity;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	TMap<EWeaponAmmoType, int32> AmmoMagazine;
 		
 };

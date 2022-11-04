@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
 #include "Items/ItemData.h"
-#include "Items/WeaponAmmoType.h"
 #include "GameFramework/Character.h"
 #include "CharacterController.generated.h"
 
@@ -34,7 +33,7 @@ protected:
 	void StopCrouch();
 	void Attack();
 
-	UFUNCTION(BlueprintCallable, Category="TEST")
+	UFUNCTION(BlueprintCallable)
 	void UseItem(TSubclassOf<AItem> ItemSubclass);
 	
 	void Interact();
@@ -59,28 +58,14 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interactive, meta = (AllowPrivateAccess = "true"))
     bool bHoldingItem;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
 	class UPlayerInteractionComponent* InteractionComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
-	float Health;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items", meta = (AllowPrivateAccess = "true"))
-	UInventory* Inventory;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
-	AWeapon* EquippedWeapon;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
-	TMap<EWeaponAmmoType, int32> AmmoMagazine;
 
 	bool bEquiped;
 	
 public:
 
-	bool GetEquiped() { return bEquiped; }
-
-	UInventory* GetInventory() { return Inventory; }
+	bool GetEquiped() const { return bEquiped; }
 
 	void Heal(AFoodItem* FoodItem, float Value);
 

@@ -3,11 +3,9 @@
 
 #include "CharacterController.h"
 
-#include "IntertableInterface.h"
 #include "PlayerInteractionComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Camera/CameraComponent.h"
-#include "Items/Inventory.h"
 #include "Items/Item.h"
 #include "Items/Weapon.h"
 #include "Components/CapsuleComponent.h"
@@ -19,7 +17,6 @@
 ACharacterController::ACharacterController() :
 	BaseTurnRate(45.f),
 	BaseLookRate(45.f),
-	Health(90.f),
 	bHoldingItem(false),
 	bClimbing(false),
 	bEquiped(false)
@@ -31,13 +28,8 @@ ACharacterController::ACharacterController() :
 	FirstPersonCamera->SetupAttachment(GetRootComponent());
 	FirstPersonCamera->bUsePawnControlRotation = true;
 
-	Inventory = CreateDefaultSubobject<UInventory>(TEXT("Inventory"));
-	Inventory->SetCapacity(10);
-
 	InteractionComponent = CreateDefaultSubobject<UPlayerInteractionComponent>(TEXT("InteractionComponent"));
-
-	AmmoMagazine.Add(EWeaponAmmoType::EAT_PISTOL, 20);
-
+	
 }
 
 // Called to bind functionality to input
@@ -63,11 +55,8 @@ void ACharacterController::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 void ACharacterController::Heal(AFoodItem* FoodItem, float Value)
 {
-	if(Value > 0 && FoodItem && Health < 100)
-	{
-		Health += Value;
-		UE_LOG(LogTemp, Warning, TEXT("Healing"));
-	}
+	UE_LOG(LogTemp, Warning, TEXT("Healing"));
+
 }
 
 void ACharacterController::MoveForward(float Value)
@@ -126,9 +115,9 @@ void ACharacterController::StopCrouch()
 
 void ACharacterController::Attack()
 {
-	if(EquippedWeapon)
+	if(InteractionComponent->GetWeapon())
 	{
-		EquippedWeapon->Use(this);
+		InteractionComponent->GetWeapon()->Use(this);
 	}
 
 	/*UKismetSystemLibrary KismetSystemLibrary;
@@ -137,51 +126,22 @@ void ACharacterController::Attack()
 
 void ACharacterController::EquipWeapon(AWeapon* WeaponToEquip)
 {
-	if(WeaponToEquip)
-	{
-		const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(FName("WeaponSocket"));
-		if(HandSocket)
-		{
-			HandSocket->AttachActor(WeaponToEquip, GetMesh());
-			bEquiped = true;
-		}
-		EquippedWeapon = WeaponToEquip;
-	}
+	bEquiped = InteractionComponent->EquipWeapon(this, WeaponToEquip);
 }
+
 void ACharacterController::DropWeapon()
 {
-	if(EquippedWeapon)
-	{
-		EquippedWeapon->Destroy();
-		bEquiped = false;
-	}
+	bEquiped = !InteractionComponent->DropWeapon();
 	
 }
 
 void ACharacterController::UseItem(TSubclassOf<AItem> ItemSubclass)
 {
-	if(ItemSubclass)
-	{
-		if(AItem* UsingItem = ItemSubclass.GetDefaultObject())
-		{
-			UsingItem->Use(this);
-		}
-	}
+	InteractionComponent->UseItem(this, ItemSubclass);
 	
 }
 
 void ACharacterController::Interact()
 {
-	const FVector Start = FirstPersonCamera->GetComponentLocation();
-	const FVector End = Start + FirstPersonCamera->GetForwardVector() * 500.f;
-
-	FHitResult HitResult;
-	FCollisionQueryParams Params;
-	///Params.AddIgnoredActor(this);
-
-	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
-	if(IIntertableInterface* Interface = Cast<IIntertableInterface>(HitResult.GetActor()))
-	{
-		Interface->Interact(this);
-	}
+	InteractionComponent->Interact(this, FirstPersonCamera);
 }

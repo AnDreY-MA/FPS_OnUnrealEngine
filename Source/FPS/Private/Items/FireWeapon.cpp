@@ -25,12 +25,13 @@ void AFireWeapon::Fire(ACharacterController* Character)
 		const FRotator SocketRotator = Controller->PlayerCameraManager->GetCameraRotation();
 		const FActorSpawnParameters ActorSpawnParameters;
 		GetWorld()->SpawnActor<ABullet>(Bullet, SocketLocation, SocketRotator, ActorSpawnParameters);
+		Ammo = Ammo - 1;
 	}
 }
 
-void AFireWeapon::Interact(ACharacterController* Interator)
+void AFireWeapon::Interact(UPlayerInteractionComponent* Iterator)
 {
-	Super::Interact(Interator);
+	Super::Interact(Iterator);
 }
 
 void AFireWeapon::Use(ACharacterController* Character)

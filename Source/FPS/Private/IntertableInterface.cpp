@@ -3,7 +3,7 @@
 
 #include "IntertableInterface.h"
 
-void IIntertableInterface::Interact(class ACharacterController* Interatory)
+void IIntertableInterface::Interact(UPlayerInteractionComponent* Iterator)
 {
 }
 

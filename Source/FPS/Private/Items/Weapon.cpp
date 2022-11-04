@@ -24,9 +24,9 @@ void AWeapon::BeginPlay()
 	}
 }
 
-void AWeapon::Interact(ACharacterController* Interator)
+void AWeapon::Interact(UPlayerInteractionComponent* Iterator)
 {
-	Super::Interact(Interator);
+	Super::Interact(Iterator);
 }
 
 void AWeapon::Use(ACharacterController* Character)

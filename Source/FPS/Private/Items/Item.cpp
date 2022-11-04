@@ -4,6 +4,7 @@
 #include "Items/Item.h"
 
 #include "CharacterController.h"
+#include "PlayerInteractionComponent.h"
 #include "Engine/DataTable.h"
 #include "Items/Inventory.h"
 
@@ -33,11 +34,11 @@ void AItem::BeginPlay()
 	
 }
 
-void AItem::Interact(class ACharacterController* Interator)
+void AItem::Interact(UPlayerInteractionComponent* Iterator)
 {
-	if(Interator)
+	if(Iterator)
 	{
-		Interator->GetInventory()->AddItemToMap(Name, 1);
+		Iterator->GetInventory()->AddItemToMap(Name, 1);
 	}
 
 	Destroy();

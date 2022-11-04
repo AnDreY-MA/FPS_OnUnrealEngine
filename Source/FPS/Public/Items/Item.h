@@ -39,7 +39,7 @@ private:
 	UStaticMeshComponent* MeshComponent;
 
 public:
-	virtual void Interact(ACharacterController* Interator) override;
+	virtual void Interact(UPlayerInteractionComponent* Iterator) override;
 
 	virtual void Use(ACharacterController* Character) override;
 
