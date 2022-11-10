@@ -23,10 +23,10 @@ ACharacterController::ACharacterController() :
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("First Person Camera"));
-	FirstPersonCamera->SetupAttachment(GetRootComponent());
-	FirstPersonCamera->bUsePawnControlRotation = true;
+	FirstPersonCamera->SetupAttachment(GetMesh(), "head");
+	FirstPersonCamera->bUsePawnControlRotation = false;
 
 	InteractionComponent = CreateDefaultSubobject<UPlayerInteractionComponent>(TEXT("InteractionComponent"));
 	
@@ -119,19 +119,24 @@ void ACharacterController::Attack()
 	{
 		InteractionComponent->GetWeapon()->Use(this);
 	}
-
-	/*UKismetSystemLibrary KismetSystemLibrary;
-	KismetSystemLibrary.MoveComponentTo()*/
+	
 }
 
 void ACharacterController::EquipWeapon(AWeapon* WeaponToEquip)
 {
-	bEquiped = InteractionComponent->EquipWeapon(this, WeaponToEquip);
+	if (InteractionComponent->EquipWeapon(this, WeaponToEquip))
+	{
+		PlayAnimMontage(AnimEquiped, 0);
+		
+	}
 }
 
 void ACharacterController::DropWeapon()
 {
-	bEquiped = !InteractionComponent->DropWeapon();
+	if (InteractionComponent->DropWeapon())
+	{
+		StopAnimMontage(AnimEquiped);
+	}
 	
 }
 

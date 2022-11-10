@@ -7,12 +7,12 @@
 
 void UPlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 {
-	ACharacterController* Player = Cast<ACharacterController>(TryGetPawnOwner());
-	if(Player != nullptr)
+	const auto* Player = Cast<ACharacterController>(TryGetPawnOwner());
+	if(Player)
 	{
-		FVector Velocity = Player->GetVelocity();
-		Velocity.Z = 0;
+		const FVector Velocity = Player->GetVelocity();
+		//Velocity.Z = 0;
 		Speed = Velocity.Size();
-		bEquiped = Player->GetEquiped();
+		Direction = CalculateDirection(Velocity, Player->GetActorRotation());
 	}
 }

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Components/ArrowComponent.h"
+#include "CollisionQueryParams.h"
 #include "PlayerInteractionComponent.generated.h"
 
 class AWeapon;
@@ -23,7 +24,7 @@ public:
 
 	void Interact(const ACharacterController* PlayerCharacter, const class UCameraComponent* CameraComponent);
 	bool EquipWeapon(const ACharacterController* PlayerCharacter, AWeapon* WeaponToEquip);
-	bool DropWeapon() const;
+	bool DropWeapon();
 	void UseItem(ACharacterController* PlayerCharacter, TSubclassOf<AItem> ItemSubclass);
 private:
 	
@@ -33,26 +34,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items", meta = (AllowPrivateAccess = "true"))
 	AWeapon* EquippedWeapon;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* HoldObjectSlot;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
-	UArrowComponent* DefaultLocationHoldingObject;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
-	class UPhysicsConstraintComponent* Handle;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
-	UPrimitiveComponent* HeldObjet;
-
-	bool bGrabObjectInPlace;
-
-	void GrabObject(FHitResult Result);
-
 public:
 	UInventory* GetInventory() { return Inventory; }
 
-	AWeapon* GetWeapon() { return EquippedWeapon; }
-
+	AWeapon* GetWeapon() const { return EquippedWeapon; }
 
 };
