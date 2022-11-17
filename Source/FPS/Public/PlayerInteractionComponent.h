@@ -4,14 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Components/ArrowComponent.h"
-#include "CollisionQueryParams.h"
+
 #include "PlayerInteractionComponent.generated.h"
 
 class AWeapon;
 class UInventory;
 class ACharacterController;
 class AItem;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGrabObject, FHitResult, HitResult);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class FPS_API UPlayerInteractionComponent : public UActorComponent
@@ -27,12 +28,21 @@ public:
 	bool DropWeapon();
 	void UseItem(ACharacterController* PlayerCharacter, TSubclassOf<AItem> ItemSubclass);
 private:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
+	float InterectDistance;
+	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items", meta = (AllowPrivateAccess = "true"))
 	UInventory* Inventory;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items", meta = (AllowPrivateAccess = "true"))
 	AWeapon* EquippedWeapon;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnGrabObject OnGrabObject;
+
+	FHitResult TraceObject(const UCameraComponent* CameraComponent);
 
 public:
 	UInventory* GetInventory() { return Inventory; }

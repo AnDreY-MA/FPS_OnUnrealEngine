@@ -3,14 +3,11 @@
 
 #include "PlayerInteractionComponent.h"
 
-#include "BlueprintEditor.h"
 #include "IntertableInterface.h"
 #include "Items/Inventory.h"
 #include "Items/Weapon.h"
 #include "Items/Item.h"
-#include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
 UPlayerInteractionComponent::UPlayerInteractionComponent()
@@ -26,21 +23,14 @@ UPlayerInteractionComponent::UPlayerInteractionComponent()
 
 void UPlayerInteractionComponent::Interact(const ACharacterController* PlayerCharacter, const UCameraComponent* CameraComponent)
 {
-	const FVector Start = CameraComponent->GetComponentLocation();
-	const FVector End = Start + CameraComponent->GetForwardVector() * 500.0f;
-
-	FHitResult HitResult;
-	FCollisionQueryParams Params;
-	//Params.AddIgnoredActor(PlayerCharacter);
+	const FHitResult HitResult = TraceObject(CameraComponent);
 	
-	//GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility))
+	if(IIntertableInterface* Interface = Cast<IIntertableInterface>(HitResult.GetActor()))
 	{
-		if(IIntertableInterface* Interface = Cast<IIntertableInterface>(HitResult.GetActor()))
-		{
-			Interface->Interact(this);
-		}
+		Interface->Interact(this);
 	}
+
+	OnGrabObject.Broadcast(HitResult);
 	
 }
 
@@ -76,4 +66,15 @@ void UPlayerInteractionComponent::UseItem(ACharacterController* PlayerCharacter,
 			UsingItem->Use(PlayerCharacter);
 		}
 	}
+}
+
+FHitResult UPlayerInteractionComponent::TraceObject(const UCameraComponent* CameraComponent)
+{
+	const FVector Start = CameraComponent->GetComponentLocation();
+	const FVector End = Start + CameraComponent->GetForwardVector() * InterectDistance;
+
+	FHitResult HitResult;
+	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_PhysicsBody);
+
+	return HitResult;
 }

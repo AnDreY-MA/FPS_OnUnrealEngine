@@ -14,6 +14,9 @@ class UInventory;
 class AFoodItem;
 class AWeapon;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartCrouch);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStopCrouch);
+
 UCLASS()
 class FPS_API ACharacterController : public ACharacter
 {
@@ -46,6 +49,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCamera;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* CurveFloat;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	float BaseTurnRate;
 
@@ -63,6 +69,11 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* AnimEquiped;
+
+	UPROPERTY(BlueprintAssignable, Category="Crouch")
+	FOnStartCrouch OnStartCrouch;
+	UPROPERTY(BlueprintAssignable, Category="Crouch")
+	FOnStopCrouch OnStopCrouch;
 
 	bool bEquiped;
 	

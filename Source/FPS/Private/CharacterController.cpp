@@ -99,17 +99,20 @@ void ACharacterController::LookUp(float Value)
 
 void ACharacterController::StartCrouch()
 {
-	GetCapsuleComponent()->SetCapsuleHalfHeight(44.f);
+	OnStartCrouch.Broadcast();
+	/*GetCapsuleComponent()->SetCapsuleHalfHeight(44.f);
 	GetCharacterMovement()->MaxWalkSpeed = 300.f;
-	ACharacter::Crouch();
+	ACharacter::Crouch();*/
 	
 }
 
 void ACharacterController::StopCrouch()
 {
+	OnStopCrouch.Broadcast();
+	/*
 	GetCapsuleComponent()->SetCapsuleHalfHeight(88.f);
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
-	ACharacter::UnCrouch();
+	ACharacter::UnCrouch();*/
 	
 }
 
@@ -127,7 +130,7 @@ void ACharacterController::EquipWeapon(AWeapon* WeaponToEquip)
 	if (InteractionComponent->EquipWeapon(this, WeaponToEquip))
 	{
 		PlayAnimMontage(AnimEquiped, 0);
-		
+		UE_LOG(LogTemp, Warning, TEXT("Equip %s"), AnimEquiped);
 	}
 }
 
