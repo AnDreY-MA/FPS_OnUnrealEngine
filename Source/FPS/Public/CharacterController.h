@@ -50,6 +50,9 @@ private:
 	class UCameraComponent* FirstPersonCamera;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* ArmMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCurveFloat* CurveFloat;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -75,6 +78,8 @@ private:
 	UPROPERTY(BlueprintAssignable, Category="Crouch")
 	FOnStopCrouch OnStopCrouch;
 
+	bool bCrouched;
+
 	bool bEquiped;
 	
 public:
@@ -84,6 +89,8 @@ public:
 	bool GetEquiped() const { return bEquiped; }
 
 	void Heal(AFoodItem* FoodItem, float Value);
+
+	bool GetCrouched() const { return bCrouched; }
 
 	UFUNCTION(BlueprintCallable)
 	void EquipWeapon(AWeapon* WeaponToEquip);

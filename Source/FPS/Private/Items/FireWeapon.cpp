@@ -17,11 +17,11 @@ AFireWeapon::AFireWeapon() :
 
 void AFireWeapon::Fire(ACharacterController* Character)
 {
-	const USkeletalMeshSocket* MuzzleSocket = SkeletalMeshComponent->GetSocketByName("Muzzle");
+	const USkeletalMeshSocket* MuzzleSocket = WeaponMesh->GetSocketByName("Muzzle");
 	if(MuzzleSocket)
 	{
 		const APlayerController* Controller = Cast<APlayerController>(Character->GetController());
-		const FVector SocketLocation = MuzzleSocket->GetSocketLocation(SkeletalMeshComponent);
+		const FVector SocketLocation = MuzzleSocket->GetSocketLocation(WeaponMesh);
 		const FRotator SocketRotator = Controller->PlayerCameraManager->GetCameraRotation();
 		const FActorSpawnParameters ActorSpawnParameters;
 		GetWorld()->SpawnActor<ABullet>(Bullet, SocketLocation, SocketRotator, ActorSpawnParameters);

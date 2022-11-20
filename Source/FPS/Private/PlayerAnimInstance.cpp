@@ -14,5 +14,7 @@ void UPlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		//Velocity.Z = 0;
 		Speed = Velocity.Size();
 		Direction = CalculateDirection(Velocity, Player->GetActorRotation());
+		bCrouched = Player->GetCrouched();
+		bEquiped = Player->GetEquiped();
 	}
 }

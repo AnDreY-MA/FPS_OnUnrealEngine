@@ -6,9 +6,6 @@
 #include "Items/Item.h"
 #include "Weapon.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class FPS_API AWeapon : public AItem
 {
@@ -20,10 +17,13 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item", meta = (AllowPrivateAccess = "true"))
-	USkeletalMeshComponent* SkeletalMeshComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* WeaponMesh;
 
 public:
+
+	void Equip();
+	void Drop();
 	
 	virtual void Interact(UPlayerInteractionComponent* Iterator) override;
 

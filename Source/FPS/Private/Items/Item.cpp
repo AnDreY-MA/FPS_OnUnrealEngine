@@ -14,8 +14,8 @@ AItem::AItem()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	SetRootComponent(MeshComponent);
+	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	SetRootComponent(ItemMesh);
 	
 }
 
@@ -29,7 +29,7 @@ void AItem::BeginPlay()
 	ItemData.Name = It->Name;
 	if (It->Mesh)
 	{
-		MeshComponent->SetStaticMesh(It->Mesh);
+		ItemMesh->SetStaticMesh(It->Mesh);
 	}
 	
 }

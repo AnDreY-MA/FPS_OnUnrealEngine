@@ -24,7 +24,7 @@ public:
 	UPlayerInteractionComponent();
 
 	void Interact(const ACharacterController* PlayerCharacter, const class UCameraComponent* CameraComponent);
-	bool EquipWeapon(const ACharacterController* PlayerCharacter, AWeapon* WeaponToEquip);
+	bool EquipWeapon(USkeletalMeshComponent* Hand, AWeapon* WeaponToEquip);
 	bool DropWeapon();
 	void UseItem(ACharacterController* PlayerCharacter, TSubclassOf<AItem> ItemSubclass);
 private:

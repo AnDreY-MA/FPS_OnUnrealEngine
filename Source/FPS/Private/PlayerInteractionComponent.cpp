@@ -29,20 +29,23 @@ void UPlayerInteractionComponent::Interact(const ACharacterController* PlayerCha
 	{
 		Interface->Interact(this);
 	}
-
-	OnGrabObject.Broadcast(HitResult);
+	else
+	{
+		OnGrabObject.Broadcast(HitResult);
+	}
 	
 }
 
-bool UPlayerInteractionComponent::EquipWeapon(const ACharacterController* PlayerCharacter, AWeapon* WeaponToEquip)
+bool UPlayerInteractionComponent::EquipWeapon(USkeletalMeshComponent* Hand, AWeapon* WeaponToEquip)
 {
 	if(!WeaponToEquip) return false;
-	
-	const USkeletalMeshSocket* HandSocket = PlayerCharacter->GetMesh()->GetSocketByName(FName("WeaponSocket"));
+
+	const USkeletalMeshSocket* HandSocket = Hand->GetSocketByName(FName("WeaponSocket"));
 	if(!HandSocket) return false;
 
-	HandSocket->AttachActor(WeaponToEquip, PlayerCharacter->GetMesh());
+	HandSocket->AttachActor(WeaponToEquip, Hand);
 	EquippedWeapon = WeaponToEquip;
+	EquippedWeapon->Equip();
 	return true;
 
 }
@@ -50,7 +53,6 @@ bool UPlayerInteractionComponent::EquipWeapon(const ACharacterController* Player
 bool UPlayerInteractionComponent::DropWeapon()
 {
 	if(!EquippedWeapon) return false;
-
 	EquippedWeapon->Destroy();
 	EquippedWeapon = nullptr;
 	return true;
@@ -74,7 +76,7 @@ FHitResult UPlayerInteractionComponent::TraceObject(const UCameraComponent* Came
 	const FVector End = Start + CameraComponent->GetForwardVector() * InterectDistance;
 
 	FHitResult HitResult;
-	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_PhysicsBody);
+	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility);
 
 	return HitResult;
 }

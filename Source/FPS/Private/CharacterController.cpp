@@ -8,7 +8,6 @@
 #include "Camera/CameraComponent.h"
 #include "Items/Item.h"
 #include "Items/Weapon.h"
-#include "Components/CapsuleComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -25,9 +24,14 @@ ACharacterController::ACharacterController() :
 	PrimaryActorTick.bCanEverTick = true;
 	
 	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("First Person Camera"));
-	FirstPersonCamera->SetupAttachment(GetMesh(), "head");
+	FirstPersonCamera->SetupAttachment(GetRootComponent());
 	FirstPersonCamera->bUsePawnControlRotation = false;
 
+	ArmMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Arm");
+	ArmMesh->SetupAttachment(FirstPersonCamera);
+	ArmMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ArmMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	
 	InteractionComponent = CreateDefaultSubobject<UPlayerInteractionComponent>(TEXT("InteractionComponent"));
 	
 }
@@ -100,19 +104,14 @@ void ACharacterController::LookUp(float Value)
 void ACharacterController::StartCrouch()
 {
 	OnStartCrouch.Broadcast();
-	/*GetCapsuleComponent()->SetCapsuleHalfHeight(44.f);
-	GetCharacterMovement()->MaxWalkSpeed = 300.f;
-	ACharacter::Crouch();*/
+	bCrouched = true;
 	
 }
 
 void ACharacterController::StopCrouch()
 {
 	OnStopCrouch.Broadcast();
-	/*
-	GetCapsuleComponent()->SetCapsuleHalfHeight(88.f);
-	GetCharacterMovement()->MaxWalkSpeed = 600.f;
-	ACharacter::UnCrouch();*/
+	bCrouched = false;
 	
 }
 
@@ -127,19 +126,12 @@ void ACharacterController::Attack()
 
 void ACharacterController::EquipWeapon(AWeapon* WeaponToEquip)
 {
-	if (InteractionComponent->EquipWeapon(this, WeaponToEquip))
-	{
-		PlayAnimMontage(AnimEquiped, 0);
-		UE_LOG(LogTemp, Warning, TEXT("Equip %s"), AnimEquiped);
-	}
+	bEquiped = InteractionComponent->EquipWeapon(ArmMesh, WeaponToEquip);
 }
 
 void ACharacterController::DropWeapon()
 {
-	if (InteractionComponent->DropWeapon())
-	{
-		StopAnimMontage(AnimEquiped);
-	}
+	bEquiped = !InteractionComponent->DropWeapon();
 	
 }
 

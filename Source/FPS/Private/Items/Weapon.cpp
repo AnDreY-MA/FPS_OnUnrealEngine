@@ -6,9 +6,11 @@
 
 AWeapon::AWeapon()
 {
-	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
-	//SetRootComponent(SkeletalMeshComponent);
-	SkeletalMeshComponent->SetupAttachment(GetRootComponent());
+	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
+	WeaponMesh->SetupAttachment(GetRootComponent());
+	ItemMesh->SetSimulatePhysics(true);
+	WeaponMesh->SetSimulatePhysics(true);
+
 }
 
 void AWeapon::BeginPlay()
@@ -20,8 +22,25 @@ void AWeapon::BeginPlay()
 	ItemData.Name = It->Name;
 	if (It->WeaponMesh)
 	{
-		SkeletalMeshComponent->SetSkeletalMesh(It->WeaponMesh);
+		WeaponMesh->SetSkeletalMesh(It->WeaponMesh);
 	}
+}
+
+void AWeapon::Equip()
+{
+	ItemMesh->SetSimulatePhysics(false);
+	ItemMesh->SetEnableGravity(false);
+	ItemMesh->SetCollisionResponseToChannels(ECR_Ignore);
+	ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+}
+
+void AWeapon::Drop()
+{
+	ItemMesh->SetSimulatePhysics(true);
+	ItemMesh->SetEnableGravity(true);
+	ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 void AWeapon::Interact(UPlayerInteractionComponent* Iterator)
